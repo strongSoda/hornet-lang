@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-message = "Hello from Hornet!"
-print(message)
-def greet():
-    print("Buzz buzz!")
-greet()

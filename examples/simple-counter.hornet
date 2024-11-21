@@ -1,0 +1,9 @@
+worker count = 5
+sting "Starting countdown!"
+
+hive count > 0 {
+    sting count
+    worker count = count - 1
+}
+
+sting "Liftoff!"

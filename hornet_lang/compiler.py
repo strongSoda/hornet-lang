@@ -163,30 +163,42 @@ class Compiler:
         
         return self._generate_python(ast)
     
-    # Fix the _generate_python method in the Compiler class
     def _generate_python(self, ast: List[dict]) -> str:
         python_code = []
         
         for node in ast:
             if node['type'] == 'print':
-                if node['value'].startswith('"'):
-                    python_code.append(f'print({node["value"]})')
-                else:
-                    python_code.append(f'print({node["value"]})')
+                # Add quotes if the value doesn't already have them
+                value = node['value']
+                if not value.startswith('"'):
+                    value = f'"{value}"'
+                python_code.append(f'print({value})')
+                
             elif node['type'] == 'variable':
-                if node['value'].startswith('"'):
-                    python_code.append(f'{node["name"]} = {node["value"]}')
+                name = node['name']
+                value = node['value']
+                # Handle numeric values
+                if value.isdigit():
+                    python_code.append(f'{name} = {value}')
                 else:
-                    python_code.append(f'{node["name"]} = "{node["value"]}"')
+                    # Add quotes for strings if not present
+                    if not value.startswith('"'):
+                        value = f'"{value}"'
+                    python_code.append(f'{name} = {value}')
+                    
             elif node['type'] == 'function':
                 params = ', '.join(node['params'])
                 body_code = []
                 for stmt in node['body']:
                     if stmt['type'] == 'print':
-                        body_code.append(f'    print("{stmt["value"]}")')
+                        value = stmt['value']
+                        if not value.startswith('"'):
+                            value = f'"{value}"'
+                        body_code.append(f'    print({value})')
                 if not body_code:
                     body_code = ['    pass']
                 python_code.append(f'def {node["name"]}({params}):\n' + '\n'.join(body_code))
+                
             elif node['type'] == 'call':
                 args = ', '.join(node['args'])
                 python_code.append(f'{node["name"]}({args})')
