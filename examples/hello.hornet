@@ -1,0 +1,6 @@
+worker message = "Hello from Hornet!"
+sting message
+buzz greet() {
+    sting "Buzz buzz!"
+}
+greet()

@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+import sys
+from pathlib import Path
+
+def compile_hornet(source_file: str):
+    try:
+        # Import compiler here to avoid module not found errors
+        from hornet_lang.compiler import Compiler
+        
+        code = Path(source_file).read_text()
+        compiler = Compiler()
+        python_code = compiler.compile(code)
+        
+        output_file = Path(source_file).stem
+        with open(output_file, 'w') as f:
+            f.write('#!/usr/bin/env python3\n')
+            f.write(python_code)
+        
+        Path(output_file).chmod(0o755)
+        print(f"Compiled {source_file} to executable: {output_file}")
+        
+    except Exception as e:
+        print(f"Compilation failed: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: hornet <source_file>", file=sys.stderr)
+        sys.exit(1)
+    
+    compile_hornet(sys.argv[1])
